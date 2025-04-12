@@ -1,0 +1,21 @@
+name: Build Windows
+on: [push]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        target: x86_64-pc-windows-msvc
+    - name: Build
+      run: |
+        cargo build --release
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: rustdesk-windows
+        path: target/release/rustdesk.exe
