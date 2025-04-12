@@ -5,24 +5,24 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      run: |
+        choco install -y vcpkg
+        setx VCPKG_ROOT "C:\vcpkg"
+        vcpkg install libvpx:x64-windows-static libyuv:x64-windows-static opus:x64-windows-static
     - name: Set up Rust
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         toolchain: stable
-        target: x86_64-pc-windows-msvc
+        target: x64-pc-windows-msvc
         override: true
-    - name: Cache cargo
-      uses: actions/cache@v3
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
     - name: Build
       run: |
-        cargo build --release
+        cargo build --release --verbose
     - name: Upload Artifacts
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: rustdesk-windows
